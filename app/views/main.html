@@ -1,0 +1,194 @@
+<div class="panel panel-default bordeEndeev">
+  <div class="panel-body">
+    <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+
+      <ui-gmap-marker ng-repeat="mascota in mascotas" coords="mascota.coords" options="mascota.options"
+                      events="marker.markersEvents " idkey="mascota.id">
+      </ui-gmap-marker>
+
+    </ui-gmap-google-map>
+  </div>
+</div>
+
+
+<div class="modal fade" id="nuevaMascotaModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form name="editForm" role="form" novalidate show-validation>
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                  ng-click="clear()">&times;</button>
+          <h4 class="modal-title" id="myMascotaLabel">Crear Aviso Mascota</h4>
+        </div>
+        <div class="modal-body">
+
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="control-label" for="field_nombre">Nombre</label>
+              <input type="text" class="form-control" name="nombre" id="field_nombre"
+                     ng-model="nuevaMascota.nombre"
+                     required ng-maxlength="20"/>
+              <div ng-show="editForm.nombre.$invalid">
+                <p class="help-block"
+                   ng-show="editForm.nombre.$error.required">
+                  Campo requerido
+                </p>
+                <p class="help-block"
+                   ng-show="editForm.nombre.$error.maxlength">
+                  No puede superar los 20 caracteres.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="control-label" for="field_fecha">Fecha</label>
+
+              <p class="input-group inline-datepicker">
+                <input type="text" name="fecha" id="field_fecha" class="form-control"
+                       required
+                       uib-datepicker-popup="{{formatD}}" uib-datepicker-popup
+                       ng-model="nuevaMascota.fecha"
+                       is-open="fechaDModal.opened" datepicker-options="dateOptions"
+                       ng-required="true"
+                       close-text="Close"/>
+                <span class="input-group-btn" required="">
+            <button type="button" class="btn btn-default" id="fieldfecha" ng-click="fechaDesdeModal()">
+                <i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+              </p>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="control-label" for="field_situacion">Situación</label>
+              <select ng-options="situacion for situacion in situaciones" type="text"
+                      ng-model="situacionElegida" id="field_situacion"
+                      ng-change="nuevaMascota.situacion=situacionElegida"
+                      class="form-control" placeholder="Situaciones"> </select>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="control-label" for="field_tipo">Tipo</label>
+              <select ng-options="tipo for tipo in tipos" type="text"
+                      ng-model="tipoElegido" id="field_tipo"
+                      ng-change="nuevaMascota.tipo=tipoElegido"
+                      class="form-control" placeholder="Tipos"> </select>
+            </div>
+          </div>
+
+
+          <div class="form-group" ngf-drop ngf-change="setFoto($file, nuevaMascota)" ngf-pattern="'image/*'">
+            <label class="control-label" for="field_foto">Foto</label>
+            <div>
+              <img data-ng-src="{{'data:' + nuevaMascota.fotoContentType + ';base64,' + nuevaMascota.foto}}"
+                   style="max-height: 100px;" ng-if="nuevaMascota.foto" alt="mascota image"/>
+              <div ng-if="nuevaMascota.foto" class="help-block clearfix">
+                <span class="pull-left">{{nuevaMascota.fotoContentType}}, {{byteSize(nuevaMascota.foto)}}</span>
+                <button type="button" ng-click="nuevaMascota.foto=null;nuevaMascota.fotoContentType=null;"
+                        class="btn btn-default btn-xs pull-right">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
+              <button type="button" ngf-select class="btn btn-default btn-block"
+                      ngf-change="setFoto($file, nuevaMascota)" accept="image/*">
+                Subir
+              </button>
+            </div>
+            <input type="hidden" class="form-control" name="foto" id="field_foto"
+                   ng-model="nuevaMascota.foto"
+                   required/>
+            <input type="hidden" class="form-control" name="fotoContentType" id="field_fotoContentType"
+                   ng-model="nuevaMascota.fotoContentType"/>
+            <div ng-show="editForm.foto.$invalid">
+              <p class="help-block"
+                 ng-show="editForm.foto.$error.required">
+                Campo requerido
+              </p>
+            </div>
+          </div>
+
+          <p>* Se ubicará la mascota en una posición aleatoria dentro de un radio de 3 km.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
+            <span>Volver</span>
+          </button>
+          <button type="submit" ng-disabled="editForm.$invalid" ng-click="altaMascota(nuevaMascota)"
+                  class="btn btn-default botonEndeev">
+            Crear Aviso
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div ng-controller="MainCtrl" class="modal fade" id="verMascotaModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form name="editForm1" role="form" show-validation>
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                  ng-click="clear()">&times;</button>
+          <h4 class="modal-title" id="verMascotaLabel">Información Mascota</h4>
+        </div>
+        <div class="modal-body">
+
+          <div class="row">
+            <div class="col-md-6 form-group">
+
+
+              <img data-ng-src="{{'data:' + verMascota.fotoContentType + ';base64,' + verMascota.foto}}"
+                   style="max-height: 200px; height: 100%; max-height: 150px;" ng-if="verMascota.foto"
+                   alt="mascota image"/>
+              <img ng-if="!verMascota.foto && verMascota.id!=''"
+                   src="/images/{{verMascota.id}}-{{verMascota.nombre}}.png"
+                   style="max-height: 200px; height: 100%; max-height: 150px;" alt="mascota image"/>
+
+
+              <input type="hidden" class="form-control" name="foto" id="ver_field_foto"
+                     ng-model="verMascota.foto"
+                     required/>
+
+            </div>
+            <div class="col-md-6 ">
+
+              <div class="form-group">
+
+                <h2>{{verMascota.nombre}}</h2>
+                <h4>{{verMascota.situacion}} en fecha {{verMascota.fecha}}</h4>
+                <h4>{{verMascota.tipo}}</h4>
+              </div>
+
+
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
+            <span>Volver</span>
+          </button>
+          <button ng-if="verMascota.situacion==='Encontrada'" class="btn btn-default botonEndeev"><span
+            class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Conozco Dueño
+          </button>
+          <button ng-if="verMascota.situacion==='Perdida'" class="btn btn-default botonEndeev"><span
+            class="glyphicon glyphicon-search"></span>&nbsp;La Encontré
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
