@@ -8,7 +8,7 @@
  * Controller of the mascotasApp
  */
 angular.module('mascotasApp')
-  .controller('MainCtrl', function ($scope, $interval, DataUtils, $timeout, uibDatepickerConfig, $rootScope) {
+  .controller('MainCtrl', function ($scope, $interval, DataUtils, $timeout, uibDatepickerConfig, $rootScope,Service) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -23,14 +23,10 @@ angular.module('mascotasApp')
     };
 
     /*Selects Options*/
-    $scope.situaciones = [
-      "Perdida", "Encontrada"
-    ];
+    $scope.situaciones = Service.getSituaciones();
     $scope.situacionElegida = $scope.situaciones[0];
 
-    $scope.tipos = [
-      "Perro", "Gato", "Loro", "Conejo", "Otros"
-    ];
+    $scope.tipos = Service.getTipos();
     $scope.tipoElegido = $scope.tipos[0];
 
     /*Google Maps*/
@@ -66,76 +62,7 @@ angular.module('mascotasApp')
     };
     $scope.clearMascota();
 
-    $scope.mascotas = [
-      {
-        id: '0',
-        nombre: 'Juani',
-        situacion: 'Perdida',
-        tipo: 'Perro',
-        fecha: '04/03/2017',
-        foto: null,
-        fotoContentType: null,
-        coords: {
-          latitude: '-31.6354346',
-          longitude: '-60.7051804'
-        },
-        options: {
-          draggable: false,
-          icon: "/images/icons/perdida.png"
-        },
-      },
-      {
-        id: '1',
-        nombre: 'Tito',
-        situacion: 'Encontrada',
-        tipo: 'Gato',
-        fecha: '04/03/2017',
-        foto: null,
-        fotoContentType: null,
-        coords: {
-          latitude: '-31.6406006',
-          longitude: '-60.6747256'
-        },
-        options: {
-          draggable: false,
-          icon: "/images/icons/encontrada.png"
-        },
-      },
-      {
-        id: '2',
-        nombre: 'Teo',
-        situacion: 'Perdida',
-        tipo: 'Perro',
-        fecha: '04/03/2017',
-        foto: null,
-        fotoContentType: null,
-        coords: {
-          latitude: '-31.6198214',
-          longitude: '-60.6960941'
-        },
-        options: {
-          draggable: false,
-          icon: "/images/icons/perdida.png"
-        },
-      },
-      {
-        id: '3',
-        nombre: 'Renata',
-        situacion: 'Perdida',
-        tipo: 'Perro',
-        fecha: '04/03/2017',
-        foto: null,
-        fotoContentType: null,
-        coords: {
-          latitude: '-31.6566568',
-          longitude: '-60.71113149'
-        },
-        options: {
-          draggable: false,
-          icon: "/images/icons/perdida.png"
-        },
-      }
-    ]
+    $scope.mascotas = Service.getMascotas();
 
     $scope.detectarUbicacion = function () {
       $scope.errorValidacion = false;
